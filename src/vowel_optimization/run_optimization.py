@@ -191,24 +191,30 @@ def run_optimization(
 
 
 def run_compare(
-    context_file: str,
+    context_files: list[str],
     model: str = MODEL,
 ) -> None:
-    """Compare current EVAL_SPEC_CONTEXT vs an optimized one."""
-    optimized = Path(context_file).read_text()
-
-    print("\n1. Current EVAL_SPEC_CONTEXT:")
-    score_current = run_evaluation(EVAL_SPEC_CONTEXT, model=model, label="current")
-
-    print("\n2. Optimized EVAL_SPEC_CONTEXT:")
-    score_optimized = run_evaluation(optimized, model=model, label="optimized")
-
+    """Compare multiple context files."""
+    if len(context_files) < 2:
+        raise ValueError("At least 2 context files required for comparison")
+    
+    results = []
+    for i, file_path in enumerate(context_files, 1):
+        context = Path(file_path).read_text()
+        label = Path(file_path).name
+        
+        print(f"\n{i}. {label}:")
+        score = run_evaluation(context, model=model, label=label)
+        results.append((label, score))
+    
     print(f"\n{'=' * 60}")
     print("Comparison:")
-    print(f"  Current:   {score_current:.0%}")
-    print(f"  Optimized: {score_optimized:.0%}")
-    diff = score_optimized - score_current
-    print(f"  Δ: {diff:+.0%}")
+    for label, score in results:
+        print(f"  {label}: {score:.0%}")
+    
+    if len(results) == 2:
+        diff = results[1][1] - results[0][1]
+        print(f"  Δ: {diff:+.0%}")
 
 
 def main() -> int:
@@ -237,8 +243,15 @@ def main() -> int:
     )
 
     # compare
-    cmp_p = subparsers.add_parser("compare", help="Compare current vs optimized")
-    cmp_p.add_argument("context_file", type=str, help="Path to optimized context file")
+    cmp_p = subparsers.add_parser(
+        "compare", help="Compare multiple context files"
+    )
+    cmp_p.add_argument(
+        "context_files",
+        nargs="+",
+        type=str,
+        help="Context files to compare (minimum 2)",
+    )
     cmp_p.add_argument("--model", type=str, default=MODEL, help="Eval model")
 
     args = parser.parse_args()
@@ -260,7 +273,10 @@ def main() -> int:
         )
 
     elif args.command == "compare":
-        run_compare(args.context_file, model=args.model)
+        run_compare(
+            args.context_files,
+            model=args.model,
+        )
 
     else:
         parser.print_help()
