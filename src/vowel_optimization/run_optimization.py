@@ -194,18 +194,30 @@ def run_compare(
     context_files: list[str],
     model: str = MODEL,
 ) -> None:
-    """Compare multiple context files."""
-    if len(context_files) < 2:
-        raise ValueError("At least 2 context files required for comparison")
-    
+    """Compare multiple context files, or one file vs default EVAL_SPEC_CONTEXT."""
     results = []
-    for i, file_path in enumerate(context_files, 1):
+    
+    # If only 1 file provided, compare against default EVAL_SPEC_CONTEXT
+    if len(context_files) == 1:
+        print("\n1. Current EVAL_SPEC_CONTEXT:")
+        score_current = run_evaluation(EVAL_SPEC_CONTEXT, model=model, label="current")
+        results.append(("EVAL_SPEC_CONTEXT", score_current))
+        
+        file_path = context_files[0]
         context = Path(file_path).read_text()
         label = Path(file_path).name
-        
-        print(f"\n{i}. {label}:")
+        print(f"\n2. {label}:")
         score = run_evaluation(context, model=model, label=label)
         results.append((label, score))
+    else:
+        # Compare multiple files
+        for i, file_path in enumerate(context_files, 1):
+            context = Path(file_path).read_text()
+            label = Path(file_path).name
+            
+            print(f"\n{i}. {label}:")
+            score = run_evaluation(context, model=model, label=label)
+            results.append((label, score))
     
     print(f"\n{'=' * 60}")
     print("Comparison:")
@@ -244,13 +256,13 @@ def main() -> int:
 
     # compare
     cmp_p = subparsers.add_parser(
-        "compare", help="Compare multiple context files"
+        "compare", help="Compare context files (1 file: vs default, 2+: among themselves)"
     )
     cmp_p.add_argument(
         "context_files",
         nargs="+",
         type=str,
-        help="Context files to compare (minimum 2)",
+        help="Context file(s) to compare",
     )
     cmp_p.add_argument("--model", type=str, default=MODEL, help="Eval model")
 

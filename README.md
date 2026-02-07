@@ -135,29 +135,55 @@ python -m vowel_optimization optimize \
 
 ### 3. Compare Results
 
-Benchmark current vs optimized prompts:
+Compare prompts against each other or against the default:
 
 ```bash
+# Compare one file vs default EVAL_SPEC_CONTEXT
 python -m vowel_optimization compare optimized_context.txt
+
+# Compare two specific files
+python -m vowel_optimization compare optimized_context.txt optimized_context_v3.txt
+
+# Compare multiple files
+python -m vowel_optimization compare v1.txt v2.txt v3.txt
 ```
 
-**Output:**
+**Output (1 file vs default):**
 ```
 1. Current EVAL_SPEC_CONTEXT:
 ============================================================
 Average pass rate: 91%
 ...
 
-2. Optimized EVAL_SPEC_CONTEXT:
+2. optimized_context.txt:
 ============================================================
 Average pass rate: 96%
 ...
 
 ============================================================
 Comparison:
-  Current:   91%
-  Optimized: 96%
+  EVAL_SPEC_CONTEXT: 91%
+  optimized_context.txt: 96%
   Δ: +5%
+```
+
+**Output (2+ files):**
+```
+1. optimized_context.txt:
+============================================================
+Average pass rate: 85%
+...
+
+2. optimized_context_v3.txt:
+============================================================
+Average pass rate: 99%
+...
+
+============================================================
+Comparison:
+  optimized_context.txt: 85%
+  optimized_context_v3.txt: 99%
+  Δ: +14%
 ```
 
 ### 4. Evaluate Custom Prompts
@@ -346,8 +372,9 @@ python -m vowel_optimization optimize --max-calls 50 \
   --output opt_v2.txt
 
 # Compare all versions
-python -m vowel_optimization compare opt_v1.txt
-python -m vowel_optimization compare opt_v2.txt
+python -m vowel_optimization compare opt_v1.txt         # vs default
+python -m vowel_optimization compare opt_v2.txt         # vs default
+python -m vowel_optimization compare opt_v1.txt opt_v2.txt  # direct comparison
 ```
 
 ---
