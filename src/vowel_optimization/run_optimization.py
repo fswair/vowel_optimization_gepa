@@ -35,7 +35,7 @@ import dotenv
 dotenv.load_dotenv()
 
 # ── Logfire setup ───────────────────────────────────────────
-if os.getenv("LOGFIRE_ENABLED", "true").lower() == "true":
+if os.getenv("LOGFIRE_ENABLED", "false").lower() == "true":
     logfire.configure(
         service_name="vowel-optimization",
         send_to_logfire="if-token-present",
