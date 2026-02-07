@@ -8,8 +8,8 @@ correctly validate these original implementations.
 from __future__ import annotations
 
 import inspect
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
 
 from .definitions import FUNCTIONS
 

@@ -1,5 +1,7 @@
 """Allow running as: python -m vowel_optimization <command>"""
-from .run_optimization import main
+
 import sys
+
+from .run_optimization import main
 
 sys.exit(main())

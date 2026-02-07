@@ -23,6 +23,7 @@ import sys
 from pathlib import Path
 
 import logfire
+
 from vowel.context import EVAL_SPEC_CONTEXT
 
 from .adapter import MODEL, PROPOSER_MODEL, create_adapter
@@ -202,14 +203,14 @@ def run_compare(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Vowel eval spec prompt optimization via GePa"
-    )
+    parser = argparse.ArgumentParser(description="Vowel eval spec prompt optimization via GePa")
     subparsers = parser.add_subparsers(dest="command", help="Command to run")
 
     # eval
     eval_p = subparsers.add_parser("eval", help="Evaluate current context")
-    eval_p.add_argument("--context-file", type=str, help="Use a saved context file instead of default")
+    eval_p.add_argument(
+        "--context-file", type=str, help="Use a saved context file instead of default"
+    )
     eval_p.add_argument("--model", type=str, default=MODEL, help="Eval model")
 
     # optimize
@@ -218,7 +219,9 @@ def main() -> int:
     opt_p.add_argument("--output", type=str, help="File to save optimized context")
     opt_p.add_argument("--model", type=str, default=MODEL, help="Eval model")
     opt_p.add_argument("--proposer-model", type=str, default=PROPOSER_MODEL, help="Proposer model")
-    opt_p.add_argument("--seed-file", type=str, help="Start from a previously optimized context file")
+    opt_p.add_argument(
+        "--seed-file", type=str, help="Start from a previously optimized context file"
+    )
 
     # compare
     cmp_p = subparsers.add_parser("compare", help="Compare current vs optimized")

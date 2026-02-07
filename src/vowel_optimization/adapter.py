@@ -35,9 +35,9 @@ class VowelTrajectory:
 @dataclass
 class VowelGEPAAdapter(
     GEPAAdapter[
-        FunctionCase,       # BatchItemT
-        VowelTrajectory,    # TrajectoryT
-        dict | None,        # OutputT
+        FunctionCase,  # BatchItemT
+        VowelTrajectory,  # TrajectoryT
+        dict | None,  # OutputT
     ]
 ):
     """GEPA adapter for optimizing vowel's EVAL_SPEC_CONTEXT prompt.
@@ -100,22 +100,28 @@ Return ONLY the improved EVAL_SPEC_CONTEXT text (no markdown fences, no explanat
                 model=self.eval_model,
             )
 
-            outputs.append({
-                "func_name": result.func_name,
-                "pass_rate": result.pass_rate,
-                "total_cases": result.total_cases,
-                "passed_cases": result.passed_cases,
-                "error": result.error,
-            })
+            outputs.append(
+                {
+                    "func_name": result.func_name,
+                    "pass_rate": result.pass_rate,
+                    "total_cases": result.total_cases,
+                    "passed_cases": result.passed_cases,
+                    "error": result.error,
+                }
+            )
             scores.append(result.score)
 
             if capture_traces and trajectories is not None:
-                trajectories.append(VowelTrajectory(
-                    func_case=func_case,
-                    eval_result=result,
-                ))
+                trajectories.append(
+                    VowelTrajectory(
+                        func_case=func_case,
+                        eval_result=result,
+                    )
+                )
 
-            print(f"  {func_case.name}: {result.pass_rate:.0%} ({result.passed_cases}/{result.total_cases})")
+            print(
+                f"  {func_case.name}: {result.pass_rate:.0%} ({result.passed_cases}/{result.total_cases})"
+            )
 
         avg = sum(scores) / len(scores) if scores else 0.0
         print(f"  → Average: {avg:.0%}")
@@ -138,7 +144,7 @@ Return ONLY the improved EVAL_SPEC_CONTEXT text (no markdown fences, no explanat
 
         examples: list[dict[str, Any]] = []
 
-        for traj, score in zip(eval_batch.trajectories, eval_batch.scores):
+        for traj, score in zip(eval_batch.trajectories, eval_batch.scores, strict=False):
             result = traj.eval_result
             record: dict[str, Any] = {
                 "function": result.func_name,
@@ -200,7 +206,9 @@ Return ONLY the improved EVAL_SPEC_CONTEXT text (no markdown fences, no explanat
                     )
 
             feedback_text = "\n\n".join(feedback_parts)
-            logfire.info("proposer_feedback", num_examples=len(examples), feedback_chars=len(feedback_text))
+            logfire.info(
+                "proposer_feedback", num_examples=len(examples), feedback_chars=len(feedback_text)
+            )
 
             prompt = f"""Current EVAL_SPEC_CONTEXT (the prompt being optimized):
 --- START ---
