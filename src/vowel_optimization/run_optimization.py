@@ -24,7 +24,6 @@ from pathlib import Path
 
 import dotenv
 import logfire
-
 from vowel.context import EVAL_SPEC_CONTEXT
 from vowel.monitoring import enable_monitoring
 
